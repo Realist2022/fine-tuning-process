@@ -1,0 +1,17 @@
+[project]
+name = "model-data-curation-and-training"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "accelerate>=1.10.1",
+    "datasets>=4.5.0",
+    "huggingface-hub>=1.8.0",
+    "openai>=2.48.0",
+    "pydantic>=2.13.4",
+    "requests>=2.32.5",
+    "transformers>=4.12.2",
+    "trl>=0.12.2",
+    "wandb>=0.26.1",
+]
