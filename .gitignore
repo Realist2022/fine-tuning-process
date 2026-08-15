@@ -5,6 +5,32 @@ build/
 dist/
 wheels/
 *.egg-info
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Virtual environments
-.venv
+.venv/
+
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+
+# Downloaded and generated datasets (may contain resume data)
+raw_cv_jd_pairs.jsonl
+synthetic_semantic.jsonl
+rejected_semantic.jsonl
+train_semantic.jsonl
+train_split_semantic.jsonl
+test_semantic.jsonl
+
+# Training and experiment artifacts
+outputs/
+wandb/
+unsloth_compiled_cache/
+
+# Generated evaluation artifacts
+evaluation_*.json
+evaluation_*.jsonl
+evaluation_*.html
