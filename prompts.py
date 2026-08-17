@@ -50,7 +50,7 @@ OVERALL_EXPERIENCE_SYSTEM_PROMPT = """Extract and classify the candidate's profe
 - Extract ONLY paid employment or professional contractor work experience.
 - STRICTLY EXCLUDE educational degrees, academic courses, certifications, bootcamps, personal projects, and volunteer work.
 - Include role_title exactly as written.
-- Format start_date and end_date as YYYY-MM or "Present" when present in the CV.
+- Format start_date and end_date as "Month YYYY" (e.g., "July 2025") or "Present" when present in the CV.
 - Use null only if the CV is missing the start_date or end_date.
 - Do not infer missing dates, missing employers, roles not explicitly stated, or experience not supported by the text.
 

@@ -23,6 +23,7 @@ synthetic_semantic.jsonl
 rejected_semantic.jsonl
 train_semantic.jsonl
 train_split_semantic.jsonl
+validation_semantic.jsonl
 test_semantic.jsonl
 
 # Training and experiment artifacts

@@ -23,10 +23,10 @@ def main() -> None:
         "extract": ("01_extract", "extract_netsol_data"),
         "synthesize": ("02_synthesize", "generate_synthetic_data"),
         "validate": ("03_validate", "validate_and_format"),
-        "profile": ("04_profile_tokens", "profile_dataset_tokens"),
-        "split": ("05_split", "split_dataset"),
+        "split": ("04_split", "split_dataset"),
+        "profile": ("05_profile_tokens", "profile_dataset_tokens"),
         "train": ("06_train", "run_training"),
-        "evaluate": ("07_evaluate", "evaluate_model"),
+        "evaluate": ("07_evaluate", "run_evaluation"),
     }[args.stage]
     getattr(importlib.import_module(module_name), function_name)()
 
