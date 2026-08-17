@@ -1,101 +1,77 @@
-from typing import List, Optional
+"""Schemas for synthetic data generation and fine-tuning extraction."""
 
-from pydantic import BaseModel, Field
+from __future__ import annotations
 
-# --- AI GENERATED SCHEMAS (Semantic Engine) ---
+from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field
+
+
+# --- 1. Job Requirements Schemas ---
 class JobRequirement(BaseModel):
-    skill_name: str = Field(min_length=1)
+    model_config = ConfigDict(extra="forbid")
+    skill_name: str = Field(
+        min_length=1, 
+        description="One atomic technical or operational skill_name."
+    )
 
-class JobRequirementsOutput(BaseModel):
-    job_requirements: List[JobRequirement]
 
-class SkillsEvaluation(BaseModel):
-    requirement_category: str
-    job_requirements: List[JobRequirement]
-    matched_cv_skills: List[str]
-    missing_cv_skills: List[str]
-    rationale: str
+# --- 2. Skill Matching Schemas ---
+class RequirementEvaluation(BaseModel):
+    requirement_id: int = Field(
+        description="The supplied zero-based numeric requirement ID."
+    )
+    matched: bool = Field(
+        description="Whether the CV satisfies this requirement."
+    )
+    cv_evidence: str = Field(
+        default="", 
+        description="Exact CV excerpt if matched is true; empty string if false."
+    )
 
-class RequirementInput(BaseModel):
-    requirement_id: int = Field(ge=0)
-    skill_name: str = Field(min_length=1)
 
-class SkillMatcherInput(BaseModel):
-    requirements: List[RequirementInput]
+# --- 3. Work Experience Schemas ---
+class WorkRole(BaseModel):
+    role_title: str = Field(
+        description="Title of the candidate's position."
+    )
+    start_date: Optional[str] = Field(
+        default=None, 
+        description="Role start date in YYYY-MM format, or null when missing."
+    )
+    end_date: Optional[str] = Field(
+        default=None, 
+        description="Role end date in YYYY-MM format, Present, or null when missing."
+    )
+    match_rationale: str = Field(
+        description="Brief comparison of this role with the target job."
+    )
+    is_relevant: bool = Field(
+        description="Whether the role provides directly relevant target-job experience."
+    )
 
-class SkillMatch(BaseModel):
-    requirement_id: int = Field(ge=0)
-    matched: bool
-
-class SkillMatcherOutput(BaseModel):
-    evaluations: List[SkillMatch]
-
-class CandidateRole(BaseModel):
-    role_title: str = Field(min_length=1)
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
-    match_rationale: str
-    is_relevant: bool
-
-class OverallExperience(BaseModel):
-    target_job_title: str
-    target_overall_years: Optional[float] = None
-    candidate_roles: List[CandidateRole]
 
 class OverallExperienceOutput(BaseModel):
-    overall_experience: OverallExperience
+    target_job_title: str = Field(
+        description="Target role title from the listing."
+    )
+    target_overall_years: Optional[float] = Field(
+        default=None, 
+        ge=0.0, 
+        description="Explicit overall experience required, or null when unspecified."
+    )
+    candidate_roles: list[WorkRole] = Field(
+        description="Professional roles supported by the candidate CV."
+    )
 
-# These fields are used only while producing and checking labels. They are not
-# part of the deployed Llama response contract.
-class SynthesisSkillMatch(SkillMatch):
-    cv_evidence: str = ""
 
-class SynthesisCandidateRole(CandidateRole):
-    cv_evidence: str = ""
-
-class SynthesisOverallExperience(BaseModel):
-    target_job_title: str = Field(min_length=1)
-    target_overall_years: Optional[float] = Field(default=None, ge=0)
-    target_years_evidence: str = ""
-    candidate_roles: List[SynthesisCandidateRole]
-
+# --- Master Synthesis Schema (for 02_synthesize.py) ---
 class SynthesisAnnotation(BaseModel):
-    job_requirements: List[JobRequirement]
-    skill_matches: List[SynthesisSkillMatch]
-    overall_experience: SynthesisOverallExperience
-
-# --- PYTHON GENERATED SCHEMAS (Deterministic Engine) ---
-class Pillar(BaseModel):
-    score: float
-    raw: str
-    applicable: bool
-
-class Scorecard(BaseModel):
-    final_relevance: float
-    pillar_a: Pillar
-    pillar_b: Pillar
-    counted_roles: List[str]
-
-class Metrics(BaseModel):
-    total_requirements: int
-    total_matched: int
-    match_percentage: float
-    final_relevance: float
-
-class Check(BaseModel):
-    name: str
-    expected: str
-    actual: str
-    passed: bool
-
-class Evaluation(BaseModel):
-    passed: bool
-    checks: List[Check]
-
-class FullGuestimatorOutput(BaseModel):
-    """The final artifact combining AI semantics and Python math"""
-    skills_evaluation: SkillsEvaluation
-    overall_experience: OverallExperience
-    scorecard: Scorecard
-    metrics: Metrics
-    evaluation: Evaluation
+    job_requirements: list[JobRequirement] = Field(
+        description="Unique atomic technical or operational capabilities extracted from the job description."
+    )
+    skill_matches: list[RequirementEvaluation] = Field(
+        description="One match decision for every extracted job requirement, ordered by requirement_id."
+    )
+    overall_experience: OverallExperienceOutput = Field(
+        description="Extracted overall target job information and candidate role experience."
+    )
